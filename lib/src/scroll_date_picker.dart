@@ -24,7 +24,7 @@ class ScrollDatePicker extends StatefulWidget {
     this.indicator,
   })  : minimumDate = minimumDate ?? DateTime(1960, 1, 1),
         maximumDate = maximumDate ?? DateTime.now(),
-        locale = locale ?? const Locale('en'),
+        locale = locale ?? const Locale('ko'),
         options = options ?? const DatePickerOptions(),
         scrollViewOptions = scrollViewOptions ?? const DatePickerScrollViewOptions(),
         super(key: key);
