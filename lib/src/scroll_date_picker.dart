@@ -4,6 +4,12 @@ import 'package:scroll_date_picker/src/widgets/date_scroll_view.dart';
 
 import 'utils/get_monthly_date.dart';
 
+enum DatePickMode{
+  ymd,
+  ym,
+  y
+}
+
 class ScrollDatePicker extends StatefulWidget {
   ScrollDatePicker({
     Key? key,
@@ -14,6 +20,7 @@ class ScrollDatePicker extends StatefulWidget {
     Locale? locale,
     DatePickerOptions? options,
     DatePickerScrollViewOptions? scrollViewOptions,
+    this.datePickMode = DatePickMode.ymd,
     this.indicator,
   })  : minimumDate = minimumDate ?? DateTime(1960, 1, 1),
         maximumDate = maximumDate ?? DateTime.now(),
@@ -21,6 +28,8 @@ class ScrollDatePicker extends StatefulWidget {
         options = options ?? const DatePickerOptions(),
         scrollViewOptions = scrollViewOptions ?? const DatePickerScrollViewOptions(),
         super(key: key);
+
+  final DatePickMode datePickMode;
 
   /// The currently selected date.
   final DateTime selectedDate;
@@ -197,22 +206,49 @@ class _ScrollDatePickerState extends State<ScrollDatePicker> {
   }
 
   void _onDateTimeChanged() {
-    _selectedDate = DateTime(selectedYear, selectedMonth, selectedDay);
+    switch(widget.datePickMode) {
+      case DatePickMode.ymd:
+        _selectedDate = DateTime(selectedYear, selectedMonth, selectedDay);
+        break;
+      case DatePickMode.ym:
+        _selectedDate = DateTime(selectedYear, selectedMonth);
+        break;
+      case DatePickMode.y:
+        _selectedDate = DateTime(selectedYear);
+        break;
+    }
+
     widget.onDateTimeChanged(_selectedDate);
   }
 
   List<Widget> _getScrollDatePicker() {
     _initDateScrollView();
+    final List<Widget> list = [];
     switch (widget.locale.languageCode) {
       case ko:
-        return [_yearScrollView, _monthScrollView, _dayScrollView];
-      case vi:
-      case id:
-      case th:
-        return [_dayScrollView, _monthScrollView, _yearScrollView];
-      default:
-        return [_monthScrollView, _dayScrollView, _yearScrollView];
+        list.addAll([_yearScrollView, _monthScrollView, _dayScrollView]);
+        break;
+        //todo 暂不支持其他国家类型
+      // case vi:
+      // case id:
+      // case th:
+      //   list.addAll([_dayScrollView, _monthScrollView, _yearScrollView]);
+      //   break;
+      // default:
+      //   list.addAll([_monthScrollView, _dayScrollView, _yearScrollView]);
+      //   break;
     }
+    switch(widget.datePickMode) {
+      case DatePickMode.ymd:
+        break;
+      case DatePickMode.ym:
+        list.removeAt(2);
+        break;
+      case DatePickMode.y:
+        list.removeRange(1, 2);
+        break;
+    }
+    return list;
   }
 
   @override
@@ -249,7 +285,7 @@ class _ScrollDatePickerState extends State<ScrollDatePicker> {
                     height: widget.options.itemExtent,
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.15),
-                      borderRadius: const BorderRadius.all(Radius.circular(4)),
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
                     ),
                   ),
               Expanded(

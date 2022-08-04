@@ -50,9 +50,12 @@ class _MyAppState extends State<MyApp> {
           SizedBox(
             height: 250,
             child: ScrollDatePicker(
+              options: DatePickerOptions(itemExtent: 47),
               selectedDate: _selectedDate,
-              locale: Locale('en'),
+              locale: Locale('ko'),
+              datePickMode: DatePickMode.ym,
               onDateTimeChanged: (DateTime value) {
+                debugPrint('--- $value');
                 setState(() {
                   _selectedDate = value;
                 });
